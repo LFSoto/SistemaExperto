@@ -1,4 +1,0 @@
-('padre', ('Pedro', 'Lucas'))
-('hermano', ('Luis', 'Miguel'))
-('madre', ('Pedro', 'Luis'))
-('esposo', ('Luis', 'Maria'))

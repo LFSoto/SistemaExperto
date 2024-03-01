@@ -40,20 +40,17 @@ def get_relacion(tipo_relacion):
 # Base de conocimientos con hechos
 facts(hermano, ('Juan', 'Mario'))
 facts(hermana, ('Ana', 'Maria'))
-facts(padre, ('Pedro', 'Juan'), ('Pedro', 'Mario'))
+facts(padre, ('Pedro', 'Juan'), ('Pedro', 'Mario'), ('Pedro', 'Nicole'))
 facts(madre, ('Luisa', 'Juan'), ('Luisa', 'Mario'))
 facts(esposa, ('Luisa', 'Pedro'))
 
+################################################
+
 
 # Validaciones
-def es_hijo(x, y):
-    return conde([padre(y, x)], [madre(y, x)])
-
-
-def es_hermano(x, y):
-    z = var()
-    return conde([padre(z, x), padre(z, y)],
-                 [madre(z, x), madre(z, y)])
+def es_hijo(padre_persona, hijo_persona):
+    return conde([padre(hijo_persona, padre_persona)],
+                 [madre(hijo_persona, padre_persona)])
 
 
 def es_hermano_o_hermana(persona1, persona2):
@@ -62,9 +59,12 @@ def es_hermano_o_hermana(persona1, persona2):
                  [madre(x, persona1), madre(x, persona2)])
 
 
-def es_padre(padre_p, hijo_p):
-    return conde([padre(padre_p, hijo_p)],
-                 [madre(padre_p, hijo_p)])
+def es_padre(padre_persona, hijo_persona):
+    return padre(padre_persona, hijo_persona)
+
+
+def es_madre(madre_persona, hijo_persona):
+    return madre(madre_persona, hijo_persona)
 
 
 def es_conyuge(persona1, persona2):
@@ -92,6 +92,9 @@ def guardar_archivo(relacion_p, hechos_p):
         archivo.write("\n")
 
 
+################################################
+
+
 def agregar_hecho(relacion_p, hecho_p):
     relacion = get_relacion(relacion_p)
     facts(relacion, hecho_p)
@@ -107,13 +110,20 @@ def consultar(relacion, persona):
     x = var()
     if relacion == 'hermano' or relacion == 'hermana':
         resultado = run(0, x, es_hermano_o_hermana(x, persona))
-        print(f'Los hermanos de {persona} son: {resultado}')
-    elif relacion == 'padre' or relacion == 'madre':  # work
-        resultado = run(1, x, es_hijo(x, persona))
-        print(f'{persona} es el padre o la madre de: {resultado}')
+        filtro = [r for r in resultado if r != persona]
+        print(f'Los hermanos de {persona} son: {filtro}')
+    elif relacion == 'padre':
+        resultado = run(1, x, es_padre(x, persona))
+        print(f'El padre de {persona} es: {resultado}')
+    elif relacion == 'madre':  # work
+        resultado = run(1, x, es_madre(x, persona))
+        print(f'La madre de {persona} es: {resultado}')
     elif relacion == 'esposa' or relacion == 'esposo':  # work
         resultado = run(1, x, es_conyuge(x, persona))
         print(f'El esposo o la esposa de {persona} es: {resultado}')
+    elif relacion == 'hijo':
+        resultado = run(1, x, es_hijo(x, persona))
+        print(f'El hijo de {persona} es: {resultado}')
     else:
         print("Opción no válida, por favor intenta de nuevo")
 
@@ -140,7 +150,9 @@ def main():
             agregar_hecho(relacion, (primera_persona, segunda_persona))
 
         elif opcion == '2':
-            agregar_regla()
+            #agregar_regla()
+            print('TBD')
+
         elif opcion == '3':
             primera_persona = input("Por favor, introduzca el nombre de la persona: ")
             relacion = input("Por favor, introduzca la relacion que quiere consultar: ")
@@ -148,6 +160,7 @@ def main():
 
         elif opcion == '4':
             salir()
+
         else:
             print("Opción no válida, por favor intenta de nuevo")
 
