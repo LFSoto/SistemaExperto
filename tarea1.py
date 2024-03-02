@@ -99,7 +99,8 @@ def agregar_hecho(relacion_p, hecho_p):
     relacion = get_relacion(relacion_p)
     facts(relacion, hecho_p)
     guardar_archivo(relacion_p, hecho_p)
-    consultar(relacion_p, hecho_p[0])
+    print('Agregado correctamente a la base de conocimiento')
+    #consultar(relacion_p, hecho_p[0])
 
 
 def agregar_regla(nombre, regla):
